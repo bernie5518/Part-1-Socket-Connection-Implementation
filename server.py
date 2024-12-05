@@ -1,4 +1,8 @@
 import socket
+from datetime import datetime
+
+def log_with_timestamp(message):
+    print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} - {message}")
 
 def start_server():
     """
@@ -10,51 +14,51 @@ def start_server():
     try:
         # Step 1: Create the server socket
         server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        print("Server socket created.")
+        log_with_timestamp("Server socket created.")
 
         # Step 2: Bind the server socket
         server_socket.bind((host, port))
-        print(f"Server socket bound to {host}:{port}")
+        log_with_timestamp(f"Server socket bound to {host}:{port}")
 
         # Step 3: Listen for incoming connections
         server_socket.listen(5)
-        print("Server is listening for incoming connections.")
+        log_with_timestamp("Server is listening for incoming connections.")
 
         while True:
-            print("Waiting for a connection...")
+            log_with_timestamp("Waiting for a connection...")
             conn, addr = server_socket.accept()  # Accept a new connection
-            print(f"Connection established with {addr}")
+            log_with_timestamp(f"Connection established with {addr}")
 
             try:
                 while True:
                     # Step 4: Server sends a message to the client
                     server_message = input("Enter a message to send to the client (type 'exit' to disconnect): ")
                     if server_message.lower() == 'exit':
-                        print("Server is closing the connection.")
+                        log_with_timestamp("Server is closing the connection.")
                         conn.sendall("exit".encode())  # Notify the client
                         break
                     conn.sendall(server_message.encode())  # Send the message
-                    print("Message sent to the client.")
+                    log_with_timestamp("Message sent to the client.")
 
                     # Step 5: Receive a message from the client
                     client_message = conn.recv(1024).decode()  # Receive and decode data
                     if client_message.lower() == 'exit':
-                        print("Client requested to disconnect.")
+                        log_with_timestamp("Client requested to disconnect.")
                         break
-                    print(f"Received from client: {client_message}")
+                    log_with_timestamp(f"Received from client: {client_message}")
             except Exception as e:
-                print(f"Error during communication: {e}")
+                log_with_timestamp(f"Error during communication: {e}")
             finally:
                 # Step 6: Close the connection
                 conn.close()
-                print(f"Connection with {addr} closed.")
+                log_with_timestamp(f"Connection with {addr} closed.")
     except socket.error as e:
-        print(f"Socket error: {e}")
+        log_with_timestamp(f"Socket error: {e}")
     except Exception as e:
-        print(f"Server error: {e}")
+        log_with_timestamp(f"Server error: {e}")
     finally:
         server_socket.close()
-        print("Server socket closed.")
+        log_with_timestamp("Server socket closed.")
 
 if __name__ == "__main__":
     start_server()
